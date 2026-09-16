@@ -266,28 +266,42 @@ body::before {
 .preview-card__title--placeholder { font-style: italic; }
 
 /* ---------- Carrusel móvil ---------- */
-.mcarousel { position: relative; width: 100%; overflow: hidden; }
+/* -------------------------------------------------------
+   Carrusel móvil: slide activo centrado, laterales visibles
+   slide-w = 72vw  |  gap = 12px
+   offset inicial = (100vw - 72vw) / 2 = 14vw
+   por cada slide: desplazar 72vw + 12px
+   ------------------------------------------------------- */
+.mcarousel {
+  position: relative;
+  width: 100%;
+  /* clip lateral para que no se vea más allá de la pantalla */
+  overflow: hidden;
+}
 .mcarousel__track {
   display: flex;
-  gap: 1rem;
-  /* slide-w = 72vw  →  padding = (100vw - 72vw) / 2 = 14vw para centrar */
-  padding-left: 14vw;
-  padding-right: 14vw;
-  transition: transform .42s cubic-bezier(.4,0,.2,1);
+  gap: 12px;
+  /* margen inicial para centrar slide 0 */
+  margin-left: 14vw;
+  transition: transform .44s cubic-bezier(.4,0,.2,1);
   will-change: transform;
-  box-sizing: content-box;
 }
 .mcarousel__slide {
   flex: 0 0 72vw;
-  max-width: 72vw;
+  width: 72vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: .4;
-  transform: scale(.88);
-  transition: opacity .42s var(--ease), transform .42s var(--ease);
+  opacity: .38;
+  transform: scale(.87);
+  transition: opacity .44s var(--ease), transform .44s var(--ease);
+  pointer-events: none;
 }
-.mcarousel__slide.is-center { opacity: 1; transform: scale(1); }
+.mcarousel__slide.is-center {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
 .mcarousel__slide .preview-card { width: 100%; }
 .mcarousel__slide .preview-card__frame { border-radius: 12px; }
 .mcarousel__slide.is-center .preview-card__frame { border-color: var(--line-hover); }
