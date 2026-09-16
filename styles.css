@@ -267,28 +267,29 @@ body::before {
 
 /* ---------- Carrusel móvil ---------- */
 /* -------------------------------------------------------
-   Carrusel móvil: slide activo centrado, laterales visibles
-   slide-w = 72vw  |  gap = 12px
-   offset inicial = (100vw - 72vw) / 2 = 14vw
-   por cada slide: desplazar 72vw + 12px
+   Carrusel móvil — alineado con los botones del hero
+   El slide activo = mismo ancho/alineación que los botones
+   Laterales asoman por los bordes (overflow visible en track,
+   pero el wrapper hace clip).
    ------------------------------------------------------- */
 .mcarousel {
   position: relative;
   width: 100%;
-  /* clip lateral para que no se vea más allá de la pantalla */
-  overflow: hidden;
+  overflow: hidden;           /* clip externo */
 }
 .mcarousel__track {
   display: flex;
   gap: 12px;
-  /* margen inicial para centrar slide 0 */
-  margin-left: 14vw;
+  /* El primer slide arranca alineado con los botones.
+     Los botones en móvil tienen max-width:320px y están centrados.
+     El slide también mide 320px (o 85vw si la pantalla es más estrecha).
+     margin-left = 50% - slide_w/2 → lo calcula JS con getBoundingClientRect */
   transition: transform .44s cubic-bezier(.4,0,.2,1);
   will-change: transform;
 }
 .mcarousel__slide {
-  flex: 0 0 72vw;
-  width: 72vw;
+  flex: 0 0 min(320px, 85vw);
+  width: min(320px, 85vw);
   display: flex;
   flex-direction: column;
   align-items: center;

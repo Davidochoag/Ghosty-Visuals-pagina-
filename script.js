@@ -228,19 +228,34 @@ function initMobileCarousel(slots) {
   let current = 0;
   const track = document.getElementById('mcarouselTrack');
   if (!track) return;
-  const dots = track.closest('.mcarousel').querySelectorAll('.mcarousel__dot');
+  const mcarousel = track.closest('.mcarousel');
+  const dots = mcarousel.querySelectorAll('.mcarousel__dot');
   const slides = track.querySelectorAll('.mcarousel__slide');
   const total = slides.length;
+  const GAP = 12;
+
+  // Calcula el offset en px para que el slide activo quede
+  // perfectamente alineado con los botones del hero (mismo centro).
+  function getSlideW() {
+    return slides[0] ? slides[0].getBoundingClientRect().width : Math.min(320, mcarousel.offsetWidth * 0.85);
+  }
+
+  function recalcMargin() {
+    const containerW = mcarousel.offsetWidth;
+    const slideW = getSlideW();
+    track.style.marginLeft = ((containerW - slideW) / 2) + 'px';
+  }
 
   function goTo(index) {
     current = Math.max(0, Math.min(index, total - 1));
-    // El padding-left del track ya centra el slide 0.
-    // Para cada slide siguiente solo hace falta moverse un ancho de slide + gap.
-    // margin-left:14vw centra el slide 0. Cada paso = slide-w (72vw) + gap (12px)
-    track.style.transform = `translateX(calc(${-current} * (72vw + 12px)))`;
+    const slideW = getSlideW();
+    track.style.transform = `translateX(${-current * (slideW + GAP)}px)`;
     dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
     slides.forEach((s, i) => s.classList.toggle('is-center', i === current));
   }
+
+  recalcMargin();
+  window.addEventListener('resize', () => { recalcMargin(); goTo(current); });
 
   // Clicks en carrusel móvil
   slides.forEach((slide, i) => {
