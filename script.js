@@ -236,7 +236,7 @@ function initMobileCarousel(slots) {
     current = Math.max(0, Math.min(index, total - 1));
     // El padding-left del track ya centra el slide 0.
     // Para cada slide siguiente solo hace falta moverse un ancho de slide + gap.
-    track.style.transform = `translateX(calc(${-current} * (80vw + 1rem)))`;
+    track.style.transform = `translateX(calc(${-current} * (72vw + 1rem)))`;
     dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
     slides.forEach((s, i) => s.classList.toggle('is-center', i === current));
   }
