@@ -343,32 +343,8 @@ navLinks.querySelectorAll('a').forEach(a => {
   });
 });
 
-/* ---------- barra de progreso (scrubber) ---------- */
-const scrubFill = document.getElementById('scrubFill');
-const scrubTime = document.getElementById('scrubTime');
-const REEL_SECONDS = 180; // duración simbólica del "reel", solo decorativo
-
-function updateScrub() {
-  const scrollTop = window.scrollY;
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = max > 0 ? Math.min(Math.max(scrollTop / max, 0), 1) : 0;
-  scrubFill.style.width = `${progress * 100}%`;
-  const seconds = Math.round(progress * REEL_SECONDS);
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const ss = String(seconds % 60).padStart(2, '0');
-  scrubTime.textContent = `${mm}:${ss}`;
-}
-
-let ticking = false;
-window.addEventListener('scroll', () => {
-  if (!ticking) {
-    requestAnimationFrame(() => { updateScrub(); ticking = false; });
-    ticking = true;
-  }
-});
-window.addEventListener('resize', updateScrub);
+/* scrubber eliminado */
 
 /* ---------- init ---------- */
 renderSkills();
 loadVideos();
-updateScrub();

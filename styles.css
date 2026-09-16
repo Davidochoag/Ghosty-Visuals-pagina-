@@ -22,8 +22,6 @@
   --font-mono: 'Space Mono', monospace;
 
   --nav-h: 64px;
-  --scrub-h: 3px;
-  --nav-gap: 18px;
   --radius: 3px;
   --container: 1180px;
   --ease: cubic-bezier(.22, .61, .36, 1);
@@ -34,7 +32,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 16px);
+  scroll-padding-top: calc(var(--nav-h) + 28px);
 }
 
 body {
@@ -79,36 +77,10 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- barra de progreso (scrubber) ---------- */
-.scrub-track {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--scrub-h);
-  background: var(--border);
-  z-index: 60;
-}
-.scrub-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--line-hover), var(--text));
-}
-.scrub-time {
-  position: absolute;
-  top: 7px; right: 14px;
-  font-family: var(--font-mono);
-  font-size: .68rem;
-  color: var(--text-muted);
-  background: var(--bg);
-  padding: 2px 6px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  letter-spacing: .03em;
-}
-
 /* ---------- navegación ---------- */
 .nav {
   position: fixed;
-  top: calc(var(--scrub-h) + var(--nav-gap));
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
   width: min(1120px, calc(100% - 2.5rem));
@@ -159,7 +131,7 @@ body::before {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 2rem) clamp(1.25rem, 6vw, 4rem) clamp(3rem, 8vw, 5rem);
+  padding: calc(var(--nav-h) + 3.5rem) clamp(1.25rem, 6vw, 4rem) clamp(3rem, 8vw, 5rem);
   overflow: hidden;
   background:
     radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255, 255, 255, .06), transparent 60%),
@@ -167,7 +139,7 @@ body::before {
 }
 .hero__osd {
   position: absolute;
-  top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 1.25rem);
+  top: calc(var(--nav-h) + 2.5rem);
   left: clamp(1.25rem, 6vw, 4rem);
   display: flex; align-items: center; gap: .5rem;
   font-family: var(--font-mono); font-size: .72rem; color: var(--text-muted);
@@ -176,11 +148,6 @@ body::before {
 .rec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text); animation: pulse 2.4s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-.corner { position: absolute; width: 26px; height: 26px; }
-.corner--tl { top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 14px); left: 14px; border-top: 2px solid var(--border); border-left: 2px solid var(--border); }
-.corner--tr { top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 14px); right: 14px; border-top: 2px solid var(--border); border-right: 2px solid var(--border); }
-.corner--bl { bottom: 14px; left: 14px; border-bottom: 2px solid var(--border); border-left: 2px solid var(--border); }
-.corner--br { bottom: 14px; right: 14px; border-bottom: 2px solid var(--border); border-right: 2px solid var(--border); }
 
 .hero__content { max-width: 900px; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
 .hero__logo-wrap { display: block; margin: 0; }
@@ -522,7 +489,7 @@ body::before {
   .nav__toggle { display: flex; }
   .nav__links {
     position: fixed;
-    top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 10px);
+    top: calc(var(--nav-h) + 22px);
     left: 50%;
     transform: translateX(-50%) translateY(-12px);
     width: min(1120px, calc(100% - 2.5rem));
@@ -645,7 +612,7 @@ body::before {
 
   /* --- hero: todo cabe sin scroll horizontal --- */
   .hero {
-    padding-top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 3.5rem);
+    padding-top: calc(var(--nav-h) + 5rem);
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     padding-bottom: 3rem;
@@ -691,7 +658,7 @@ body::before {
   .section-head p { font-size: .93rem; }
 
   /* --- resultados del portafolio: añadir margen para que el scroll funcione bien --- */
-  .portfolio-results { scroll-margin-top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 1rem); }
+  .portfolio-results { scroll-margin-top: calc(var(--nav-h) + 2rem); }
 }
 
 /* pantallas muy pequeñas (< 380px) */
