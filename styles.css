@@ -111,7 +111,7 @@ body::before {
   top: calc(var(--scrub-h) + var(--nav-gap));
   left: 50%;
   transform: translateX(-50%);
-  width: min(920px, calc(100% - 2.5rem));
+  width: min(1120px, calc(100% - 2.5rem));
   height: var(--nav-h);
   display: flex;
   align-items: center;
@@ -456,7 +456,7 @@ body::before {
     top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 10px);
     left: 50%;
     transform: translateX(-50%) translateY(-8px);
-    width: min(920px, calc(100% - 2.5rem));
+    width: min(1120px, calc(100% - 2.5rem));
     flex-direction: column;
     background: rgba(22, 22, 20, .96);
     backdrop-filter: blur(10px);
