@@ -270,14 +270,20 @@ body::before {
 .mcarousel__track {
   display: flex;
   gap: 1rem;
-  /* el primer slide arranca centrado */
+  /* padding para que el primer slide arranque centrado:
+     50vw  = mitad de la pantalla
+     40vw  = mitad del slide (80vw / 2) */
   padding-left: calc(50vw - 40vw);
   padding-right: calc(50vw - 40vw);
+  /* transición controlada por JS vía transform */
   transition: transform .42s cubic-bezier(.4,0,.2,1);
   will-change: transform;
+  /* evitar que el contenido se desborde visualmente por los lados */
+  box-sizing: content-box;
 }
 .mcarousel__slide {
   flex: 0 0 80vw;
+  max-width: 80vw;
   display: flex;
   flex-direction: column;
   align-items: center;
