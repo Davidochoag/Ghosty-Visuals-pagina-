@@ -9,13 +9,20 @@
 
 const CATEGORY_ORDER = ['Interviews', 'Corporativo', 'Gaming', 'Comercial', 'Artistas', 'Fútbol'];
 
+// SVG logos de herramientas principales (inline, sin dependencias externas)
+const PREMIERE_SVG = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="8" fill="#00005B"/><path d="M13 34V14h7.2c1.7 0 3.1.3 4.3.9 1.2.6 2.1 1.5 2.7 2.6.6 1.1.9 2.4.9 3.9 0 1.5-.3 2.8-1 3.9-.6 1.1-1.6 2-2.8 2.6-1.2.6-2.7.9-4.4.9H16.8V34H13zm3.8-8.8h3.2c1.3 0 2.3-.4 3-1.1.7-.7 1-1.7 1-3 0-1.3-.3-2.3-1-3-.7-.7-1.7-1.1-3-1.1h-3.2v8.2z" fill="#9999FF"/></svg>`;
+
+const AE_SVG = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="8" fill="#00005B"/><path d="M28.6 34l-1.5-4.4h-7.3L18.3 34H15l6.8-20h4.3L33 34h-4.4zm-2.4-7.4l-2.7-8.1-2.7 8.1h5.4z" fill="#9999FF"/><path d="M33 25.5c0-2.8.7-4.9 2-6.4 1.3-1.5 3.1-2.2 5.5-2.2.5 0 .9 0 1.3.1v3.3c-.4-.1-.8-.1-1.2-.1-1.2 0-2.2.4-2.9 1.2-.7.8-1 2-1 3.6V34H33V25.5z" fill="#9999FF"/></svg>`;
+
+const CAPCUT_SVG = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="8" fill="#1a1a1a"/><path d="M24 10 L38 18 L38 30 L24 38 L10 30 L10 18 Z" fill="none" stroke="white" stroke-width="2"/><path d="M20 19 L30 24 L20 29 Z" fill="white"/></svg>`;
+
 const SKILLS = [
-  'Adobe Premiere Pro',
-  'After Effects',
-  'CapCut',
-  'Sony Vegas',
-  'Marketing Digital',
-  'Contenido Audiovisual'
+  { name: 'Adobe Premiere Pro', svg: PREMIERE_SVG },
+  { name: 'After Effects',      svg: AE_SVG },
+  { name: 'CapCut',             svg: CAPCUT_SVG },
+  { name: 'Sony Vegas',         svg: null },
+  { name: 'Marketing Digital',  svg: null },
+  { name: 'Contenido Audiovisual', svg: null }
 ];
 
 const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7-11-7z"/></svg>';
@@ -184,7 +191,10 @@ function renderHeroPreviews() {
 
 /* ---------- habilidades ---------- */
 function renderSkills() {
-  skillsList.innerHTML = SKILLS.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+  skillsList.innerHTML = SKILLS.map(s => {
+    const logo = s.svg ? `<span class="skill__logo" aria-hidden="true">${s.svg}</span>` : '';
+    return `<li class="${s.svg ? 'skill--has-logo' : ''}">${logo}<span class="skill__name">${escapeHtml(s.name)}</span></li>`;
+  }).join('');
 }
 
 /* ---------- modal ---------- */
