@@ -558,3 +558,70 @@ body::before {
   height: 20px;
   border-radius: 4px;
 }
+
+/* ============================================================
+   OPTIMIZACIONES MÓVIL — se aplican en pantallas < 640px
+   ============================================================ */
+@media (max-width: 640px) {
+
+  /* --- hero: todo cabe sin scroll horizontal --- */
+  .hero {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 2.5rem;
+    min-height: 100svh;
+  }
+  .hero__logo { width: min(90vw, 340px); }
+  .hero__role { font-size: 1rem; margin-top: .75rem; }
+  .hero__tagline { font-size: .93rem; max-width: 100%; }
+  .hero__cta { flex-direction: column; align-items: stretch; gap: .75rem; margin-top: 1.5rem; }
+  .btn { padding: .85rem 1.25rem; font-size: .92rem; }
+
+  /* --- previews: fila horizontal scrolleable, tarjetas más pequeñas --- */
+  .hero__previews {
+    gap: .75rem;
+    margin-top: 1.5rem;
+    padding-bottom: .5rem;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .hero__previews::-webkit-scrollbar { display: none; }
+  .preview-card { width: min(56vw, 200px); }
+  .preview-card__title { font-size: .78rem; }
+
+  /* --- portafolio: cajitas apiladas de ancho completo --- */
+  .category-boxes { grid-template-columns: 1fr 1fr; gap: .65rem; }
+  .category-box { padding: 1rem 1.1rem; }
+  .category-box__name { font-size: .95rem; }
+  .category-box__count { font-size: .75rem; }
+
+  /* --- cards del portafolio: 1 columna --- */
+  .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  /* --- sección Sobre Mí --- */
+  .about { grid-template-columns: 1fr; gap: 2rem; }
+  .about__brand { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .about__logo { width: min(70vw, 200px); }
+
+  /* --- habilidades: wrap ajustado --- */
+  .skills { gap: .5rem; }
+  .skills li { font-size: .78rem; padding: .45rem .75rem; }
+  .skill__logo svg, .skill__logo img { width: 16px; height: 16px; }
+
+  /* --- contacto: 1 columna --- */
+  .contact__grid { grid-template-columns: 1fr; }
+
+  /* --- sección head --- */
+  .section-head h2 { font-size: 1.6rem; }
+  .section-head p { font-size: .93rem; }
+
+  /* --- resultados del portafolio: añadir margen para que el scroll funcione bien --- */
+  .portfolio-results { scroll-margin-top: calc(var(--nav-h) + var(--scrub-h) + var(--nav-gap) + 1rem); }
+}
+
+/* pantallas muy pequeñas (< 380px) */
+@media (max-width: 380px) {
+  .category-boxes { grid-template-columns: 1fr; }
+  .hero__logo { width: 85vw; }
+}
