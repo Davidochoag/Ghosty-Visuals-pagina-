@@ -144,7 +144,7 @@ function renderResults() {
   wireCardClicks(resultsEl);
 }
 
-/* ---------- previews de video en el inicio ---------- */
+/* ---------- previews de video en el inicio (miniaturas, sin reproductor embebido) ---------- */
 function renderHeroPreviews() {
   const featured = videos.filter(v => v.featured).slice(0, 3);
   const slots = [0, 1, 2].map(i => featured[i] || null);
@@ -158,11 +158,16 @@ function renderHeroPreviews() {
         </div>
       `;
     }
-    const src = `https://www.youtube.com/embed/${encodeURIComponent(v.id)}?autoplay=1&mute=1&loop=1&playlist=${encodeURIComponent(v.id)}&controls=0&modestbranding=1&playsinline=1&rel=0`;
     return `
       <button class="preview-card" data-id="${escapeHtml(v.id)}" aria-label="Reproducir ${escapeHtml(v.title)}">
         <span class="preview-card__frame">
-          <iframe src="${src}" title="${escapeHtml(v.title)}" tabindex="-1" allow="autoplay; encrypted-media"></iframe>
+          <img
+            src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
+            alt="Miniatura de ${escapeHtml(v.title)}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg';"
+          >
+          <span class="preview-card__play" aria-hidden="true">${ICON_PLAY}</span>
         </span>
         <span class="preview-card__title">${escapeHtml(v.title)}</span>
       </button>

@@ -1,8 +1,8 @@
-# Ghostyvisual — Portafolio
+# Ghosty Visuals — Portafolio
 
-Sitio estático (HTML + CSS + JS, sin frameworks ni build). Se publica igual que tu sitio actual: arrastrando la carpeta a Netlify.
+Sitio estático (HTML + CSS + JS, sin frameworks ni build).
 
-Archivos: `index.html`, `styles.css`, `script.js`, `videos.json` y la carpeta `assets/` (ahí viven las dos versiones de tu logo). Al publicar, sube la carpeta completa — si falta `assets/`, el logo no va a cargar.
+Archivos: `index.html`, `styles.css`, `script.js`, `videos.json`, `logo-full.png`, `logo-ghost-only.png` y `README.md`, todos en la misma carpeta (sin subcarpetas). Al publicar o subir a GitHub, sube todos estos archivos juntos, al mismo nivel.
 
 ## Cómo agregar un video nuevo
 
