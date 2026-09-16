@@ -158,94 +158,117 @@ function renderResults() {
   wireCardClicks(resultsEl);
 }
 
-/* ---------- previews de video — carrusel centrado ---------- */
+/* ---------- previews de video ---------- */
 function renderHeroPreviews() {
   const featured = videos.filter(v => v.featured).slice(0, 3);
   const slots = [0, 1, 2].map(i => featured[i] || null);
 
+  const cardHTML = slots.map((v, i) => {
+    if (!v) return `
+      <div class="preview-card preview-card--placeholder">
+        <span class="preview-card__frame preview-card__frame--empty">Agrega video</span>
+        <span class="preview-card__title preview-card__title--placeholder">Agrega texto</span>
+      </div>`;
+    return `
+      <button class="preview-card" data-id="${escapeHtml(v.id)}" aria-label="Reproducir ${escapeHtml(v.title)}">
+        <span class="preview-card__frame">
+          <img
+            src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
+            alt="Miniatura de ${escapeHtml(v.title)}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg';"
+          >
+          <span class="preview-card__play" aria-hidden="true">${ICON_PLAY}</span>
+        </span>
+        <span class="preview-card__title">${escapeHtml(v.title)}</span>
+      </button>`;
+  }).join('');
+
+  // PC: fila estática de 3 tarjetas
+  // Móvil: carrusel (controlado por CSS + JS de swipe)
   heroPreviewsEl.innerHTML = `
-    <div class="carousel">
-      <div class="carousel__track" id="carouselTrack">
-        ${slots.map((v, i) => {
-          if (!v) return `
-            <div class="carousel__slide carousel__slide--placeholder" data-index="${i}">
-              <div class="preview-card preview-card--placeholder">
-                <span class="preview-card__frame preview-card__frame--empty">Agrega video</span>
-              </div>
-              <span class="preview-card__title preview-card__title--placeholder">Agrega texto</span>
-            </div>`;
-          return `
-            <div class="carousel__slide" data-index="${i}" data-id="${escapeHtml(v.id)}">
+    <div class="previews-desktop">${cardHTML}</div>
+    <div class="previews-mobile">
+      <div class="mcarousel">
+        <div class="mcarousel__track" id="mcarouselTrack">
+          ${slots.map((v, i) => {
+            if (!v) return `<div class="mcarousel__slide mcarousel__slide--placeholder"><div class="preview-card preview-card--placeholder"><span class="preview-card__frame preview-card__frame--empty">Agrega video</span></div><span class="preview-card__title preview-card__title--placeholder">Agrega texto</span></div>`;
+            return `<div class="mcarousel__slide" data-index="${i}">
               <button class="preview-card" data-id="${escapeHtml(v.id)}" aria-label="Reproducir ${escapeHtml(v.title)}">
                 <span class="preview-card__frame">
-                  <img
-                    src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
-                    alt="Miniatura de ${escapeHtml(v.title)}"
-                    loading="lazy"
-                    onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg';"
-                  >
+                  <img src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
+                    alt="${escapeHtml(v.title)}" loading="lazy"
+                    onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${encodeURIComponent(v.id)}/hqdefault.jpg';">
                   <span class="preview-card__play" aria-hidden="true">${ICON_PLAY}</span>
                 </span>
               </button>
               <span class="preview-card__title">${escapeHtml(v.title)}</span>
             </div>`;
-        }).join('')}
+          }).join('')}
+        </div>
+        <div class="mcarousel__dots">
+          ${slots.map((_, i) => `<button class="mcarousel__dot${i===0?' is-active':''}" data-dot="${i}"></button>`).join('')}
+        </div>
       </div>
-      <div class="carousel__dots" id="carouselDots">
-        ${slots.map((_, i) => `<button class="carousel__dot${i===0?' is-active':''}" data-dot="${i}" aria-label="Video ${i+1}"></button>`).join('')}
-      </div>
-    </div>
-  `;
+    </div>`;
 
-  initCarousel(slots);
+  // Clicks en PC
+  heroPreviewsEl.querySelectorAll('.previews-desktop .preview-card[data-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const video = videos.find(v => v.id === btn.dataset.id);
+      if (video) openModal(video);
+    });
+  });
+
+  // Carrusel móvil
+  initMobileCarousel(slots);
 }
 
-function initCarousel(slots) {
+function initMobileCarousel(slots) {
   let current = 0;
-  const track = document.getElementById('carouselTrack');
-  const dots = document.querySelectorAll('.carousel__dot');
-  const slides = document.querySelectorAll('.carousel__slide');
-  if (!track || !slides.length) return;
+  const track = document.getElementById('mcarouselTrack');
+  if (!track) return;
+  const dots = track.closest('.mcarousel').querySelectorAll('.mcarousel__dot');
+  const slides = track.querySelectorAll('.mcarousel__slide');
+  const total = slides.length;
 
   function goTo(index) {
-    current = (index + slides.length) % slides.length;
-    track.style.transform = `translateX(calc(-${current} * var(--slide-w)))`;
+    current = Math.max(0, Math.min(index, total - 1));
+    track.style.transform = `translateX(calc(${-current} * (80vw + 1rem) + calc(50vw - 40vw)))`;
     dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
     slides.forEach((s, i) => s.classList.toggle('is-center', i === current));
   }
 
-  // Click en tarjeta: abre modal
+  // Clicks en carrusel móvil
   slides.forEach((slide, i) => {
-    const btn = slide.querySelector('.preview-card');
-    if (btn && !slide.classList.contains('carousel__slide--placeholder')) {
+    const btn = slide.querySelector('.preview-card[data-id]');
+    if (btn) {
       btn.addEventListener('click', () => {
         if (i !== current) { goTo(i); return; }
         const video = videos.find(v => v.id === btn.dataset.id);
         if (video) openModal(video);
       });
     }
-    slide.addEventListener('click', () => { if (i !== current) goTo(i); });
   });
 
-  // Dots
   dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
   // Swipe táctil
-  let startX = 0;
-  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  let startX = 0, startTime = 0;
+  track.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startTime = Date.now();
+  }, { passive: true });
   track.addEventListener('touchend', e => {
     const diff = startX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+    const elapsed = Date.now() - startTime;
+    if (Math.abs(diff) > 35 && elapsed < 400) {
+      goTo(current + (diff > 0 ? 1 : -1));
+    }
   }, { passive: true });
 
-  // Estado inicial
   goTo(0);
-
-  // Auto-avance cada 4s (solo si no está en el viewport con foco)
-  let auto = setInterval(() => goTo(current + 1), 4000);
-  track.addEventListener('touchstart', () => clearInterval(auto), { passive: true });
 }
-
 /* ---------- habilidades ---------- */
 function renderSkills() {
   skillsList.innerHTML = SKILLS.map(s => {
