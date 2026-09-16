@@ -204,7 +204,7 @@ body::before {
 }
 .preview-card {
   flex: 0 0 auto;
-  width: min(230px, 62vw);
+  width: min(280px, 62vw);
   text-align: left;
 }
 .preview-card__frame {
@@ -587,7 +587,7 @@ body::before {
     scrollbar-width: none;
   }
   .hero__previews::-webkit-scrollbar { display: none; }
-  .preview-card { width: min(56vw, 200px); }
+  .preview-card { width: min(70vw, 240px); }
   .preview-card__title { font-size: .78rem; }
 
   /* --- portafolio: cajitas apiladas de ancho completo --- */
