@@ -234,60 +234,64 @@ body::before {
 
 /* ---------- Carrusel móvil ---------- */
 /* -------------------------------------------------------
-   Carrusel móvil — alineado con los botones del hero
-   El slide activo = mismo ancho/alineación que los botones
-   Laterales asoman por los bordes (overflow visible en track,
-   pero el wrapper hace clip).
+   Carrusel móvil — un slide centrado, flechas sutiles
    ------------------------------------------------------- */
-.mcarousel {
-  position: relative;
-  width: 100%;
-  overflow: hidden;           /* clip externo */
-}
-.mcarousel__track {
+.mcarousel { width: 100%; }
+
+.mcarousel__slides {
   display: flex;
-  gap: 12px;
-  /* El primer slide arranca alineado con los botones.
-     Los botones en móvil tienen max-width:320px y están centrados.
-     El slide también mide 320px (o 85vw si la pantalla es más estrecha).
-     margin-left = 50% - slide_w/2 → lo calcula JS con getBoundingClientRect */
-  transition: transform .44s cubic-bezier(.4,0,.2,1);
-  will-change: transform;
+  justify-content: center;
 }
 .mcarousel__slide {
-  flex: 0 0 min(320px, 85vw);
-  width: min(320px, 85vw);
+  width: 100%;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: .38;
-  transform: scale(.87);
-  transition: opacity .44s var(--ease), transform .44s var(--ease);
-  pointer-events: none;
-}
-.mcarousel__slide.is-center {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
 }
 .mcarousel__slide .preview-card { width: 100%; }
-.mcarousel__slide .preview-card__frame { border-radius: 12px; }
-.mcarousel__slide.is-center .preview-card__frame { border-color: var(--line-hover); }
-.mcarousel__slide.is-center .preview-card__frame img { filter: brightness(1) grayscale(0); }
-.mcarousel__slide.is-center .preview-card:hover .preview-card__play { opacity: 1; }
-.mcarousel__slide .preview-card__title { text-align: center; font-size: .82rem; padding: 0 .5rem; }
-.mcarousel__slide.is-center .preview-card__title { color: var(--text); }
+.mcarousel__slide .preview-card__frame {
+  border-radius: 12px;
+  border-color: var(--line-hover);
+}
+.mcarousel__slide .preview-card__frame img { filter: brightness(1) grayscale(0); }
+.mcarousel__slide .preview-card:hover .preview-card__play { opacity: 1; }
+.mcarousel__slide .preview-card__title {
+  text-align: center;
+  font-size: .85rem;
+  color: var(--text);
+  padding: 0 .5rem;
+}
 
-.mcarousel__dots {
-  display: flex; justify-content: center; gap: .5rem;
-  margin-top: 1rem;
+/* flechas + contador */
+.mcarousel__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: .85rem;
 }
-.mcarousel__dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--border); border: none; padding: 0; cursor: pointer;
-  transition: background .3s var(--ease), transform .3s var(--ease);
+.mcarousel__arrow {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color .2s var(--ease), color .2s var(--ease);
+  flex-shrink: 0;
 }
-.mcarousel__dot.is-active { background: var(--text); transform: scale(1.45); }
+.mcarousel__arrow:hover { border-color: var(--text); color: var(--text); }
+.mcarousel__arrow svg { width: 14px; height: 14px; }
+.mcarousel__counter {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--text-muted);
+  letter-spacing: .05em;
+  min-width: 36px;
+  text-align: center;
+}
 
 /* ---------- botones ---------- */
 .btn {

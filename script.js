@@ -190,10 +190,10 @@ function renderHeroPreviews() {
     <div class="previews-desktop">${cardHTML}</div>
     <div class="previews-mobile">
       <div class="mcarousel">
-        <div class="mcarousel__track" id="mcarouselTrack">
+        <div class="mcarousel__slides" id="mcarouselSlides">
           ${slots.map((v, i) => {
-            if (!v) return `<div class="mcarousel__slide mcarousel__slide--placeholder"><div class="preview-card preview-card--placeholder"><span class="preview-card__frame preview-card__frame--empty">Agrega video</span></div><span class="preview-card__title preview-card__title--placeholder">Agrega texto</span></div>`;
-            return `<div class="mcarousel__slide" data-index="${i}">
+            if (!v) return '';
+            return `<div class="mcarousel__slide" data-index="${i}" style="${i===0?'':'display:none'}">
               <button class="preview-card" data-id="${escapeHtml(v.id)}" aria-label="Reproducir ${escapeHtml(v.title)}">
                 <span class="preview-card__frame">
                   <img src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
@@ -206,8 +206,14 @@ function renderHeroPreviews() {
             </div>`;
           }).join('')}
         </div>
-        <div class="mcarousel__dots">
-          ${slots.map((_, i) => `<button class="mcarousel__dot${i===0?' is-active':''}" data-dot="${i}"></button>`).join('')}
+        <div class="mcarousel__nav">
+          <button class="mcarousel__arrow mcarousel__arrow--prev" id="mcarouselPrev" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="mcarousel__counter" id="mcarouselCounter">1 / ${slots.filter(v=>v).length}</span>
+          <button class="mcarousel__arrow mcarousel__arrow--next" id="mcarouselNext" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
       </div>
     </div>`;
@@ -225,64 +231,42 @@ function renderHeroPreviews() {
 }
 
 function initMobileCarousel(slots) {
+  const featured = slots.filter(v => v);
+  if (!featured.length) return;
+
+  const slidesEl = document.getElementById('mcarouselSlides');
+  const prevBtn  = document.getElementById('mcarouselPrev');
+  const nextBtn  = document.getElementById('mcarouselNext');
+  const counter  = document.getElementById('mcarouselCounter');
+  if (!slidesEl) return;
+
+  const slides = Array.from(slidesEl.querySelectorAll('.mcarousel__slide'));
   let current = 0;
-  const track = document.getElementById('mcarouselTrack');
-  if (!track) return;
-  const mcarousel = track.closest('.mcarousel');
-  const dots = mcarousel.querySelectorAll('.mcarousel__dot');
-  const slides = track.querySelectorAll('.mcarousel__slide');
-  const total = slides.length;
-  const GAP = 12;
-
-  // Calcula el offset en px para que el slide activo quede
-  // perfectamente alineado con los botones del hero (mismo centro).
-  function getSlideW() {
-    return slides[0] ? slides[0].getBoundingClientRect().width : Math.min(320, mcarousel.offsetWidth * 0.85);
-  }
-
-  function recalcMargin() {
-    const containerW = mcarousel.offsetWidth;
-    const slideW = getSlideW();
-    track.style.marginLeft = ((containerW - slideW) / 2) + 'px';
-  }
 
   function goTo(index) {
-    current = Math.max(0, Math.min(index, total - 1));
-    const slideW = getSlideW();
-    track.style.transform = `translateX(${-current * (slideW + GAP)}px)`;
-    dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
-    slides.forEach((s, i) => s.classList.toggle('is-center', i === current));
+    current = (index + slides.length) % slides.length;
+    slides.forEach((s, i) => s.style.display = i === current ? '' : 'none');
+    if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
   }
 
-  recalcMargin();
-  window.addEventListener('resize', () => { recalcMargin(); goTo(current); });
-
-  // Clicks en carrusel móvil
+  // Clicks para abrir modal
   slides.forEach((slide, i) => {
     const btn = slide.querySelector('.preview-card[data-id]');
-    if (btn) {
-      btn.addEventListener('click', () => {
-        if (i !== current) { goTo(i); return; }
-        const video = videos.find(v => v.id === btn.dataset.id);
-        if (video) openModal(video);
-      });
-    }
+    if (btn) btn.addEventListener('click', () => {
+      const video = videos.find(v => v.id === btn.dataset.id);
+      if (video) openModal(video);
+    });
   });
 
-  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
 
-  // Swipe táctil
-  let startX = 0, startTime = 0;
-  track.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    startTime = Date.now();
-  }, { passive: true });
-  track.addEventListener('touchend', e => {
+  // Swipe táctil opcional (complementa las flechas)
+  let startX = 0;
+  slidesEl.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  slidesEl.addEventListener('touchend', e => {
     const diff = startX - e.changedTouches[0].clientX;
-    const elapsed = Date.now() - startTime;
-    if (Math.abs(diff) > 35 && elapsed < 400) {
-      goTo(current + (diff > 0 ? 1 : -1));
-    }
+    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
   }, { passive: true });
 
   goTo(0);
