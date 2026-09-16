@@ -190,10 +190,10 @@ function renderHeroPreviews() {
     <div class="previews-desktop">${cardHTML}</div>
     <div class="previews-mobile">
       <div class="mcarousel">
-        <div class="mcarousel__slides" id="mcarouselSlides">
+        <div class="mcarousel__track" id="mcarouselTrack">
           ${slots.map((v, i) => {
-            if (!v) return '';
-            return `<div class="mcarousel__slide" data-index="${i}" style="${i===0?'':'display:none'}">
+            if (!v) return `<div class="mcarousel__slide mcarousel__slide--placeholder"><div class="preview-card preview-card--placeholder"><span class="preview-card__frame preview-card__frame--empty">Agrega video</span></div><span class="preview-card__title preview-card__title--placeholder">Agrega texto</span></div>`;
+            return `<div class="mcarousel__slide" data-index="${i}">
               <button class="preview-card" data-id="${escapeHtml(v.id)}" aria-label="Reproducir ${escapeHtml(v.title)}">
                 <span class="preview-card__frame">
                   <img src="https://img.youtube.com/vi/${encodeURIComponent(v.id)}/maxresdefault.jpg"
@@ -207,12 +207,11 @@ function renderHeroPreviews() {
           }).join('')}
         </div>
         <div class="mcarousel__nav">
-          <button class="mcarousel__arrow mcarousel__arrow--prev" id="mcarouselPrev" aria-label="Anterior">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <button class="mcarousel__arrow" id="mcarouselPrev" aria-label="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span class="mcarousel__counter" id="mcarouselCounter">1 / ${slots.filter(v=>v).length}</span>
-          <button class="mcarousel__arrow mcarousel__arrow--next" id="mcarouselNext" aria-label="Siguiente">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <button class="mcarousel__arrow" id="mcarouselNext" aria-label="Siguiente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
       </div>
@@ -231,28 +230,38 @@ function renderHeroPreviews() {
 }
 
 function initMobileCarousel(slots) {
-  const featured = slots.filter(v => v);
-  if (!featured.length) return;
-
-  const slidesEl = document.getElementById('mcarouselSlides');
-  const prevBtn  = document.getElementById('mcarouselPrev');
-  const nextBtn  = document.getElementById('mcarouselNext');
-  const counter  = document.getElementById('mcarouselCounter');
-  if (!slidesEl) return;
-
-  const slides = Array.from(slidesEl.querySelectorAll('.mcarousel__slide'));
   let current = 0;
+  const track   = document.getElementById('mcarouselTrack');
+  const prevBtn = document.getElementById('mcarouselPrev');
+  const nextBtn = document.getElementById('mcarouselNext');
+  if (!track) return;
 
-  function goTo(index) {
-    current = (index + slides.length) % slides.length;
-    slides.forEach((s, i) => s.style.display = i === current ? '' : 'none');
-    if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
+  const slides = Array.from(track.querySelectorAll('.mcarousel__slide'));
+  const total  = slides.length;
+  const GAP    = 16; // px — debe coincidir con el gap del CSS
+
+  // Calcula margin-left en px para que el slide 0 quede centrado
+  function center() {
+    const cw = track.parentElement.offsetWidth;
+    const sw = slides[0] ? slides[0].offsetWidth : cw * 0.82;
+    track.style.marginLeft = Math.round((cw - sw) / 2) + 'px';
+    return { cw, sw };
   }
 
-  // Clicks para abrir modal
+  function goTo(index) {
+    current = (index + total) % total;
+    const { sw } = center();
+    track.style.transform = `translateX(${-current * (sw + GAP)}px)`;
+    slides.forEach((s, i) => s.classList.toggle('is-center', i === current));
+    if (prevBtn) prevBtn.classList.toggle('is-hidden', total <= 1);
+    if (nextBtn) nextBtn.classList.toggle('is-hidden', total <= 1);
+  }
+
+  // Clicks modal
   slides.forEach((slide, i) => {
     const btn = slide.querySelector('.preview-card[data-id]');
     if (btn) btn.addEventListener('click', () => {
+      if (i !== current) { goTo(i); return; }
       const video = videos.find(v => v.id === btn.dataset.id);
       if (video) openModal(video);
     });
@@ -261,14 +270,15 @@ function initMobileCarousel(slots) {
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
 
-  // Swipe táctil opcional (complementa las flechas)
-  let startX = 0;
-  slidesEl.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-  slidesEl.addEventListener('touchend', e => {
+  // Swipe
+  let startX = 0, startT = 0;
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startT = Date.now(); }, { passive: true });
+  track.addEventListener('touchend',   e => {
     const diff = startX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+    if (Math.abs(diff) > 35 && Date.now() - startT < 400) goTo(current + (diff > 0 ? 1 : -1));
   }, { passive: true });
 
+  window.addEventListener('resize', () => goTo(current));
   goTo(0);
 }
 /* ---------- habilidades ---------- */

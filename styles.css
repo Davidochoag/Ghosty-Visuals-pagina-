@@ -234,64 +234,71 @@ body::before {
 
 /* ---------- Carrusel móvil ---------- */
 /* -------------------------------------------------------
-   Carrusel móvil — un slide centrado, flechas sutiles
+   Carrusel móvil — deslizamiento + botones circulares
+   slide-w: 82vw  |  gap: 16px
+   margin-left calculado por JS para centrar exacto
    ------------------------------------------------------- */
 .mcarousel { width: 100%; }
 
-.mcarousel__slides {
+.mcarousel__track {
   display: flex;
-  justify-content: center;
+  gap: 16px;
+  transition: transform .44s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
 }
 .mcarousel__slide {
-  width: 100%;
-  max-width: 320px;
+  flex: 0 0 82vw;
+  width: 82vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  opacity: .38;
+  transform: scale(.88);
+  transition: opacity .44s var(--ease), transform .44s var(--ease);
 }
+.mcarousel__slide.is-center { opacity: 1; transform: scale(1); }
 .mcarousel__slide .preview-card { width: 100%; }
 .mcarousel__slide .preview-card__frame {
   border-radius: 12px;
-  border-color: var(--line-hover);
+  transition: border-color .3s var(--ease);
 }
-.mcarousel__slide .preview-card__frame img { filter: brightness(1) grayscale(0); }
-.mcarousel__slide .preview-card:hover .preview-card__play { opacity: 1; }
+.mcarousel__slide.is-center .preview-card__frame { border-color: var(--line-hover); }
+.mcarousel__slide.is-center .preview-card__frame img { filter: brightness(1) grayscale(0); }
+.mcarousel__slide.is-center .preview-card:hover .preview-card__play { opacity: 1; }
 .mcarousel__slide .preview-card__title {
-  text-align: center;
-  font-size: .85rem;
-  color: var(--text);
-  padding: 0 .5rem;
+  text-align: center; font-size: .85rem; padding: 0 .5rem;
 }
+.mcarousel__slide.is-center .preview-card__title { color: var(--text); }
 
-/* flechas + contador */
+/* --- botones circulares estilo testimonios --- */
 .mcarousel__nav {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  margin-top: .85rem;
+  gap: .65rem;
+  margin-top: 1.1rem;
 }
 .mcarousel__arrow {
   display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
-  border: 1px solid var(--border);
+  width: 38px; height: 38px;
   border-radius: 50%;
-  background: none;
-  color: var(--text-muted);
+  background: rgba(30, 30, 28, .85);
+  border: 1px solid var(--border);
+  color: var(--text);
   cursor: pointer;
-  transition: border-color .2s var(--ease), color .2s var(--ease);
+  backdrop-filter: blur(6px);
+  transition: background .2s var(--ease), border-color .2s var(--ease), transform .15s var(--ease);
   flex-shrink: 0;
 }
-.mcarousel__arrow:hover { border-color: var(--text); color: var(--text); }
-.mcarousel__arrow svg { width: 14px; height: 14px; }
-.mcarousel__counter {
-  font-family: var(--font-mono);
-  font-size: .72rem;
-  color: var(--text-muted);
-  letter-spacing: .05em;
-  min-width: 36px;
-  text-align: center;
+.mcarousel__arrow:hover {
+  background: rgba(50, 50, 46, .95);
+  border-color: var(--line-hover);
+  transform: scale(1.08);
 }
+.mcarousel__arrow:active { transform: scale(.94); }
+.mcarousel__arrow svg { width: 16px; height: 16px; }
+.mcarousel__arrow.is-hidden { opacity: 0; pointer-events: none; }
+
+.mcarousel__slide--placeholder { cursor: default; }
 
 /* ---------- botones ---------- */
 .btn {
